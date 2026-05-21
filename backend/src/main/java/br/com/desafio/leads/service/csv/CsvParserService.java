@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,9 @@ public class CsvParserService {
 
     private static final List<String> HEADERS = List.of("nome", "email", "telefone", "origem", "data_cadastro");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
+    private static final DateTimeFormatter ISO_DATE = DateTimeFormatter.ISO_LOCAL_DATE;
+    private static final DateTimeFormatter BR_DATE_TIME = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+
 
     public void validarUtf8EHeaders(Path file) {
         try (var reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
@@ -47,7 +51,7 @@ public class CsvParserService {
                         csvRecord.get("email"),
                         csvRecord.get("telefone"),
                         csvRecord.get("origem"),
-                        LocalDate.parse(csvRecord.get("data_cadastro"), DATE_FORMATTER)
+                        parseDataCadastro(csvRecord.get("data_cadastro"))
                 ));
                 if (current.size() == chunkSize) {
                     chunks.add(List.copyOf(current));
@@ -66,6 +70,14 @@ public class CsvParserService {
             return (int) Math.max(0, lines.count() - 1);
         } catch (IOException e) {
             throw new BusinessException("Não foi possível contar linhas do CSV: " + e.getMessage());
+        }
+    }
+
+    private LocalDate parseDataCadastro(String value) {
+        try {
+            return LocalDate.parse(value, ISO_DATE);
+        } catch (Exception ignored) {
+            return LocalDateTime.parse(value, BR_DATE_TIME).toLocalDate();
         }
     }
 

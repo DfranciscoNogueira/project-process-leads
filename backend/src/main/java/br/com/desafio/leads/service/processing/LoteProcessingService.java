@@ -27,23 +27,43 @@ public class LoteProcessingService {
 
     @Async
     public void processar(UUID loteId, Path arquivo) {
+        int totalLinhas = 0;
 
-        var chunks = csvParserService.lerEmChunks(arquivo, properties.csv().chunkSize());
-        var totalLinhas = chunks.stream().mapToInt(java.util.List::size).sum();
-        publisher.publicarInicio(new LoteIniciadoEvent(loteId, totalLinhas, LocalDateTime.now()));
+        try {
+            var chunks = csvParserService.lerEmChunks(arquivo, properties.csv().chunkSize());
+            totalLinhas = chunks.stream().mapToInt(java.util.List::size).sum();
 
-        try (var executor = Executors.newFixedThreadPool(properties.processing().parallelism(), Thread.ofVirtual().factory())) {
-            var futures = java.util.stream.IntStream.range(0, chunks.size())
-                    .mapToObj(index -> CompletableFuture.supplyAsync(() -> chunkProcessor.process(loteId, index + 1, chunks.get(index)), executor))
-                    .toList();
+            publisher.publicarInicio(new LoteIniciadoEvent(loteId, totalLinhas, LocalDateTime.now()));
 
-            var results = futures.stream().map(CompletableFuture::join).toList();
-            var sucesso = results.stream().mapToInt(ChunkResult::sucesso).sum();
-            var erros = results.stream().mapToInt(ChunkResult::erros).sum();
-            var status = erros == 0 ? LoteStatus.FINALIZADO : LoteStatus.FINALIZADO_COM_ERROS;
-            publisher.publicarFinalizacao(new LoteFinalizadoEvent(loteId, status, sucesso, erros, LocalDateTime.now()));
+            try (var executor = Executors.newFixedThreadPool(
+                    properties.processing().parallelism(),
+                    Thread.ofVirtual().factory()
+            )) {
+                var futures = java.util.stream.IntStream.range(0, chunks.size())
+                        .mapToObj(index -> CompletableFuture.supplyAsync(
+                                () -> chunkProcessor.process(loteId, index + 1, chunks.get(index)),
+                                executor
+                        ))
+                        .toList();
+
+                var results = futures.stream().map(CompletableFuture::join).toList();
+
+                var sucesso = results.stream().mapToInt(ChunkResult::sucesso).sum();
+                var erros = results.stream().mapToInt(ChunkResult::erros).sum();
+
+                var status = erros == 0
+                        ? LoteStatus.FINALIZADO
+                        : LoteStatus.FINALIZADO_COM_ERROS;
+
+                publisher.publicarFinalizacao(
+                        new LoteFinalizadoEvent(loteId, status, sucesso, erros, LocalDateTime.now())
+                );
+            }
         } catch (Exception e) {
-            publisher.publicarFinalizacao(new LoteFinalizadoEvent(loteId, LoteStatus.FALHOU, 0, totalLinhas, LocalDateTime.now()));
+            publisher.publicarFinalizacao(
+                    new LoteFinalizadoEvent(loteId, LoteStatus.FALHOU, 0, totalLinhas, LocalDateTime.now())
+            );
         }
     }
+
 }
