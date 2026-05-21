@@ -1,0 +1,46 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: leads-api
+  profiles:
+    active: local
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 500
+        order_inserts: true
+        order_updates: true
+  flyway:
+    enabled: true
+
+app:
+  csv:
+    chunk-size: 1000
+    storage-dir: ./data/uploads
+  processing:
+    parallelism: 8
+  kafka:
+    topics:
+      lote-iniciado: lote.iniciado
+      lote-chunk-concluido: lote.chunk.concluido
+      lote-finalizado: lote.finalizado
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

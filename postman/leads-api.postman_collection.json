@@ -1,0 +1,9 @@
+{
+  "info": { "name": "Leads API", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+  "item": [
+    { "name": "Upload CSV", "request": { "method": "POST", "header": [], "body": { "mode": "formdata", "formdata": [{ "key": "file", "type": "file", "src": "sample-leads.csv" }] }, "url": { "raw": "http://localhost:8080/api/lotes", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "lotes"] } } },
+    { "name": "Status Lote", "request": { "method": "GET", "url": "http://localhost:8080/api/lotes/{{loteId}}/status" } },
+    { "name": "Listar Leads", "request": { "method": "GET", "url": "http://localhost:8080/api/leads?page=0&size=20" } },
+    { "name": "Dashboard", "request": { "method": "GET", "url": "http://localhost:8080/api/dashboard" } }
+  ]
+}

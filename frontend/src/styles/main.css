@@ -1,0 +1,150 @@
+:root {
+    font-family: Inter, system-ui, sans-serif;
+    color: #111827;
+    background: #f3f4f6;
+}
+
+body {
+    margin: 0;
+}
+
+.app {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 32px;
+}
+
+header {
+    margin-bottom: 24px;
+}
+
+header span {
+    color: #2563eb;
+    font-weight: 700;
+}
+
+h1 {
+    margin: 6px 0;
+    font-size: 34px;
+}
+
+.grid {
+    display: grid;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.card, .metric-card {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, .08);
+    margin-bottom: 16px;
+}
+
+.metric-card span {
+    color: #6b7280;
+}
+
+.metric-card strong {
+    display: block;
+    font-size: 30px;
+    margin: 10px 0;
+}
+
+.metric-card small {
+    color: #6b7280;
+}
+
+.dropzone {
+    border: 2px dashed #93c5fd;
+    border-radius: 18px;
+    padding: 32px;
+    text-align: center;
+    cursor: pointer;
+    background: #eff6ff;
+}
+
+button {
+    border: 0;
+    border-radius: 12px;
+    padding: 12px 18px;
+    background: #2563eb;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+button:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+.selected {
+    color: #2563eb;
+    font-weight: 700;
+}
+
+.progress-wrapper {
+    margin-top: 16px;
+}
+
+.progress {
+    height: 12px;
+    border-radius: 99px;
+    background: #e5e7eb;
+    overflow: hidden;
+}
+
+.progress span {
+    display: block;
+    height: 100%;
+    background: #22c55e;
+    transition: width .3s ease;
+}
+
+.filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+input {
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    padding: 12px;
+    flex: 1;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.pagination {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+@media (max-width: 800px) {
+    .three {
+        grid-template-columns: 1fr;
+    }
+
+    .filters {
+        flex-direction: column;
+    }
+}
